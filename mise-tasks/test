@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#MISE description="Run plugin tests - install and execute tool"
+set -euo pipefail
+
+mise plugin link --force nginx-exporter .
+mise cache clear
+mise install nginx-exporter@1.5.1
+
+# Capture and display the output while also verifying it
+output=$(mise exec "nginx-exporter@1.5.1" -- "nginx_exporter" --version 2>&1)
+echo "nginx-exporter output: ${output}"
+
+if echo "${output}" | grep -q '1.5.1'; then
+  echo "✓ Tests passed"
+else
+  echo "✗ Test failed: expected version nginx-exporter@1.5.1"
+  exit 1
+fi
